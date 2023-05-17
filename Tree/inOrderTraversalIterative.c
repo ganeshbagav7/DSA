@@ -1,13 +1,23 @@
+// in Order Traversal Iterative
+
 #include <stdio.h>
 #include <stdlib.h>
-typedef struct Node
+#include <stdbool.h>
+typedef struct tNode
 {
     int data;
-    struct Node *left;
-    struct Node *right;
-} node;
+    struct tNode *left;
+    struct tNode *right;
+} tnode;
 
-void print_pre_order(node *root)
+typedef struct sNode{
+    struct tNode * tptr;
+    struct sNode * next ;
+}snode;
+
+tnode * head = NULL;
+
+void print_pre_order(tnode *root)
 {
     if (root == NULL)
     {
@@ -17,7 +27,7 @@ void print_pre_order(node *root)
     print_pre_order(root->left);
     print_pre_order(root->right);
 }
-void print_in_order(node *root)
+void print_in_order(tnode *root)
 {
     if (root == NULL)
     {
@@ -27,7 +37,7 @@ void print_in_order(node *root)
     printf(" %d ", root->data);
     print_in_order(root->right);
 }
-void print_post_order(node *root)
+void print_post_order(tnode *root)
 {
     if (root == NULL)
     {
@@ -38,10 +48,68 @@ void print_post_order(node *root)
     printf(" %d ", root->data);
 }
 
-node *createNode()
+
+snode * top = NULL;
+
+void push( tnode * tptr){
+
+    snode * newStackNode = malloc(sizeof(snode));
+    newStackNode->tptr = tptr ;
+    newStackNode->next=top;
+    top=newStackNode;
+    printf("%p \n",top);
+}
+
+tnode * pop(){
+
+    if(top == NULL)
+        printf("stack is empty\n");
+        return NULL;
+    
+    tnode * temp = top->tptr;
+    snode * delStack = top;
+    top=top->next;
+    free(delStack);
+    printf("%p \n",top);
+    return temp;
+    
+}
+
+bool isEmpty(){
+    if(top==NULL)
+        return true;
+    
+    return false;
+}
+
+void in_order_iterative( tnode * root ){
+
+
+    while ( !isEmpty()|| root != NULL )
+    {   
+        printf("%d while\n",root->data);
+
+        if (root != NULL)
+        { 
+            push(root);
+            root=root->left;
+            printf("left shift \n");
+        }else{
+            root = pop();
+            printf(" %d ",root->data);
+            root=root->right;
+            printf("right shift \n");
+
+        }
+           
+    }
+    
+}
+
+tnode *createNode()
 {
 
-    node *newNode = malloc(sizeof(node));
+    tnode *newNode = malloc(sizeof(tnode));
     if (newNode == NULL)
     {
         return NULL;
@@ -55,9 +123,7 @@ node *createNode()
     return newNode;
 }
 
-node *head = NULL;
-
-void addNode(node *root)
+void addNode(tnode *root)
 {
 
     if (head == NULL)
@@ -211,13 +277,42 @@ void addNode(node *root)
     }
 }
 
-int sum_of_tree_nodes(node * root)
+int sum_of_tree_nodes(tnode * root)
 {
     if (root == NULL)
         return 0;
 
     return root->data + sum_of_tree_nodes(root->left) + sum_of_tree_nodes(root->right);
 }
+
+int count_node_of_tree( tnode * root ){
+    if(root==NULL)
+        return 0;
+    return 1+count_node_of_tree(root->left)+count_node_of_tree(root->right);
+}
+
+int hight_of_tree( tnode * root){
+    
+    if (root==NULL)
+    {
+        return -1;
+    }
+
+    int lsize = hight_of_tree(root->left);
+    int rsize = hight_of_tree(root->right);
+
+    if (lsize>rsize)
+    {
+        return 1+lsize;
+    }
+    
+    return 1+rsize; 
+    
+}
+
+
+
+
 
 void main()
 {
@@ -258,7 +353,7 @@ void main()
             }
             else
             {
-                print_in_order(head);
+                in_order_iterative(head);
             }
             printf("\n");
             break;
